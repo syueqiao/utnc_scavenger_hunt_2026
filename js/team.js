@@ -166,6 +166,18 @@
     return item.zone === filter;
   }
 
+  // Turns https links inside task text into tappable links (text stays escaped).
+  function linkify(text) {
+    return String(text || "")
+      .split(/(https?:\/\/[^\s)]+)/g)
+      .map((part, i) => {
+        if (i % 2 === 0) return part;
+        const clean = part.replace(/[.,!?]+$/, "");
+        const trailing = part.slice(clean.length);
+        return [h("a", { href: clean, target: "_blank", rel: "noopener noreferrer" }, "example photo"), trailing];
+      });
+  }
+
   function plural(n, word) {
     return n + " " + word + (n === 1 ? "" : "s");
   }
@@ -180,7 +192,7 @@
         h("span", { class: "pts-label" }, item.max_claims > 1 ? "each" : "points")
       );
     }
-    const shown = mine ? item.value_now : item.value_if_new;
+    const shown = mine ? item.mine_value : item.value_if_new;
     return h(
       "div",
       { class: "pts" },
@@ -197,8 +209,13 @@
 
     if (item.bonus_points > 0) meta.push(h("span", null, "Bonus +" + item.bonus_points + ": " + item.bonus_label));
     if (item.popularity && item.teams_claimed > 0) {
-      const others = item.teams_claimed - (item.mine_ok > 0 ? 1 : 0);
-      if (others > 0) meta.push(h("span", null, (item.mine_ok ? "Shared with " : "Claimed by ") + plural(others, "other team")));
+      const ordered = board.crowd_mode === "order";
+      if (item.mine_ok > 0 && ordered && item.mine_rank) {
+        meta.push(h("span", null, "You were team #" + item.mine_rank + " here"));
+      } else {
+        const others = item.teams_claimed - (item.mine_ok > 0 ? 1 : 0);
+        if (others > 0) meta.push(h("span", null, (item.mine_ok ? "Shared with " : "Claimed by ") + plural(others, "other team")));
+      }
     }
     if (item.max_claims > 1) meta.push(h("span", null, item.mine_ok + " of " + item.max_claims + " done"));
     if (item.mine_rejected > 0 && !done) {
@@ -213,7 +230,7 @@
         "div",
         { class: "item-main" },
         h("h3", null, item.name),
-        h("p", { class: "task" }, item.task),
+        h("p", { class: "task" }, linkify(item.task)),
         item.note ? h("p", { class: "note" }, item.note) : null,
         meta.length ? h("p", { class: "meta" }, meta) : null
       ),
@@ -287,7 +304,9 @@
                 h("li", { class: row.team_id === board.team.id ? "me" : null }, h("span", null, row.team_name), h("span", null, row.total))
               )
             ),
-            h("p", { class: "muted", style: "margin-top: 0.5rem; font-size: 0.88rem" }, "Scores update as teams submit. Crowded spots lose value for everyone who claimed them.")
+            h("p", { class: "muted", style: "margin-top: 0.5rem; font-size: 0.88rem" }, board.crowd_mode === "order"
+                ? "Scores update as teams submit. The first team at a checkpoint gets full points, and each team after gets a little less."
+                : "Scores update as teams submit. Crowded spots lose value for everyone who claimed them.")
           )
         : null;
 
@@ -419,7 +438,7 @@
         h(
           "div",
           { class: "dialog-head" },
-          h("div", null, h("h2", { id: "dlg-title" }, item.name), h("p", { class: "muted" }, item.task)),
+          h("div", null, h("h2", { id: "dlg-title" }, item.name), h("p", { class: "muted" }, linkify(item.task))),
           h("button", { class: "close-x", type: "button", "aria-label": "Close", onclick: () => !busy && close() }, "\u00d7")
         ),
         h("label", { class: "photo-pick" }, fileInput, preview),

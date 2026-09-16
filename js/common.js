@@ -32,6 +32,7 @@
     reason_required: "Add a reason for the adjustment.",
     confirm_required: "Type RESET to confirm.",
     name_required: "Give the team a name.",
+    bad_mode: "Unknown scoring mode.",
     team_has_photos: "That team has photos. Tap again to remove it anyway."
   };
 

@@ -401,7 +401,7 @@
         null,
         h("h2", { class: "section-title" }, "Scores"),
         table,
-        h("p", { class: "muted", style: "margin-top: 0.75rem; font-size: 0.9rem" }, "Checkpoint values shrink as more teams claim a spot. Only each team's best " + cap + " campus stops count.")
+        h("p", { class: "muted", style: "margin-top: 0.75rem; font-size: 0.9rem" }, (data.config.crowd_mode === "order" ? "Later teams at a checkpoint earn less than earlier ones." : "Checkpoint values shrink as more teams claim a spot.") + " Only each team's best " + cap + " campus stops count.")
       ),
       form
     );
@@ -423,7 +423,7 @@
           h(
             "thead",
             null,
-            h("tr", null, h("th", null, "Zone"), h("th", null, "Item"), h("th", { class: "num" }, "Base"), h("th", { class: "num" }, "Teams"), h("th", { class: "num" }, "Worth now"), h("th", null, "Bonus"), h("th", null, "Answer"))
+            h("tr", null, h("th", null, "Zone"), h("th", null, "Item"), h("th", { class: "num" }, "Base"), h("th", { class: "num" }, "Teams"), h("th", { class: "num" }, "Next team gets"), h("th", null, "Bonus"), h("th", null, "Answer"))
           ),
           h(
             "tbody",
@@ -436,7 +436,7 @@
                 h("td", null, i.name),
                 h("td", { class: "num" }, i.base + (i.max_claims > 1 ? " \u00d7" + i.max_claims : "")),
                 h("td", { class: "num" }, i.teams_claimed),
-                h("td", { class: "num" }, i.value_now),
+                h("td", { class: "num" }, i.value_if_new),
                 h("td", null, i.bonus_points ? "+" + i.bonus_points + " " + i.bonus_label : ""),
                 h("td", { class: "muted" }, i.answer || "")
               )
@@ -467,6 +467,12 @@
     const cap = h("input", { type: "number", id: "s-cap", min: "0", step: "1", value: String(c.campus_cap) });
     const lb = h("input", { type: "checkbox", id: "s-lb", checked: c.show_leaderboard });
     const crowd = h("input", { type: "checkbox", id: "s-crowd", checked: c.crowd_scaled });
+    const mode = h(
+      "select",
+      { id: "s-mode" },
+      h("option", { value: "order", selected: c.crowd_mode === "order" }, "First come, first served"),
+      h("option", { value: "shared", selected: c.crowd_mode === "shared" }, "Shared (everyone at a spot gets the same)")
+    );
     const resetInput = h("input", { type: "text", id: "s-reset", placeholder: "Type RESET", autocomplete: "off" });
 
     const base = location.href.replace(/admin\.html.*$/, "");
@@ -491,7 +497,8 @@
                     p_hunt_end: fromLocalInput(end.value),
                     p_show_leaderboard: lb.checked,
                     p_campus_cap: parseInt(cap.value, 10),
-                    p_crowd_scaled: crowd.checked
+                    p_crowd_scaled: crowd.checked,
+                    p_crowd_mode: mode.value
                   }),
                 "Settings saved"
               );
@@ -502,7 +509,8 @@
           h("div", { class: "field" }, h("label", { for: "s-end" }, "Hard stop"), end, h("span", { class: "muted" }, "Photos submitted after this are refused.")),
           h("div", { class: "field" }, h("label", { for: "s-cap" }, "Campus stops that count per team"), cap),
           h("label", { class: "check", for: "s-lb" }, lb, "Show the live leaderboard to teams"),
-          h("label", { class: "check", for: "s-crowd" }, crowd, "Scale the crowd penalty to the number of teams"),
+          h("div", { class: "field" }, h("label", { for: "s-mode" }, "How crowded checkpoints score"), mode),
+          h("label", { class: "check", for: "s-crowd" }, crowd, "Scale the steps to the number of teams"),
           h("span", { class: "muted" }, crowdExplainer(c, data.teams.length)),
           h("button", { class: "btn", type: "submit" }, "Save settings")
         ),
@@ -529,12 +537,16 @@
 
   function crowdExplainer(c, teamCount) {
     const floor = Math.round(c.floor_mult * 100);
+    const ordered = c.crowd_mode === "order";
+    const who = ordered ? "each later team gets " : "each extra team at a spot takes off ";
     if (c.crowd_scaled) {
       if (teamCount < 2) return "With one team there's no crowd penalty.";
       const step = Math.round(((1 - c.floor_mult) / (teamCount - 1)) * 1000) / 10;
-      return "With " + teamCount + " teams, each extra team at a spot takes off " + step + "%, and a spot every team visits is worth " + floor + "%.";
+      return ordered
+        ? "With " + teamCount + " teams, the first team at a spot gets full points, " + who + step + "% less, and the last team gets " + floor + "%."
+        : "With " + teamCount + " teams, " + who + step + "% for everyone, and a spot every team visits is worth " + floor + "%.";
     }
-    return "Each extra team takes off " + Math.round(c.decay * 100) + "%, never below " + floor + "%. This doesn't adjust when teams change.";
+    return (ordered ? "Each later team gets " + Math.round(c.decay * 100) + "% less" : "Each extra team takes off " + Math.round(c.decay * 100) + "%") + ", never below " + floor + "%. This doesn't adjust when teams change.";
   }
 
   const pendingRemove = {};
