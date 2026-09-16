@@ -1,6 +1,8 @@
 (function () {
   "use strict";
 
+  // Bump this (and the ?v= in index.html and admin.html) whenever you change a file.
+  const VERSION = "2026-09-16c";
   const cfg = window.HUNT_CONFIG || {};
   const bucket = cfg.bucket || "hunt-photos";
 
@@ -235,6 +237,7 @@
   }
 
   window.Hunt = {
+    VERSION,
     cfg,
     client,
     configured,

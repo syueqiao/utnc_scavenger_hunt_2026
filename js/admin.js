@@ -110,7 +110,7 @@
         h(
           "div",
           { class: "admin-top-inner" },
-          h("h1", null, (H.cfg.title || "Scavenger Hunt") + ": organizer"),
+          h("h1", null, (H.cfg.title || "Scavenger Hunt") + ": organizer", h("span", { class: "muted", style: "font-weight: 400; font-size: 0.8rem; margin-left: 0.6rem" }, "v" + H.VERSION)),
           h(
             "nav",
             { class: "tabs", "aria-label": "Sections" },

@@ -79,7 +79,8 @@
         h("h1", null, H.cfg.title || "Scavenger Hunt"),
         h("p", null, "Snap photos at checkpoints around Toronto, rack up points, and meet your team."),
         H.cfg.finishLine ? h("p", { class: "muted" }, "Finish: " + H.cfg.finishLine) : null,
-        form
+        form,
+        h("p", { class: "muted", style: "margin-top: 2rem; font-size: 0.8rem" }, "Version " + H.VERSION)
       )
     );
     input.focus();
@@ -351,7 +352,8 @@
             },
             "Switch team"
           )
-        )
+        ),
+        h("p", { class: "muted", style: "margin-top: 1.5rem; font-size: 0.8rem" }, "Version " + H.VERSION)
       )
     );
 

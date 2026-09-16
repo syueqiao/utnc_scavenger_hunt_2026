@@ -812,3 +812,10 @@ th.num {
     transition: none;
   }
 }
+
+.item .task a,
+.dialog-head .muted a {
+  color: var(--z-campus);
+  font-weight: 700;
+  text-underline-offset: 2px;
+}
