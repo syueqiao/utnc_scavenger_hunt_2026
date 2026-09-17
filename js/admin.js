@@ -578,7 +578,28 @@
           ),
           h("span", { class: "muted", style: "font-size: 0.85rem" }, t.photos + (t.photos === 1 ? " photo" : " photos"))
         ),
-        h("td", { class: "num" }, h("strong", { style: "letter-spacing: 0.15em; font-size: 1.1rem" }, t.code)),
+        h(
+          "td",
+          { class: "num" },
+          h("strong", { style: "letter-spacing: 0.15em; font-size: 1.1rem" }, t.code),
+          h(
+            "button",
+            {
+              class: "btn ghost small",
+              type: "button",
+              style: "margin-left: 0.5rem",
+              onclick: async () => {
+                try {
+                  await navigator.clipboard.writeText(t.code);
+                  H.toast("Copied " + t.name + "'s code");
+                } catch {
+                  H.toast("Couldn't copy — copy it by hand: " + t.code, "error");
+                }
+              }
+            },
+            "Copy"
+          )
+        ),
         h(
           "td",
           null,

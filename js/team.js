@@ -167,6 +167,13 @@
     return item.zone === filter;
   }
 
+  // Universal Google Maps link: opens the app on Android, offers Apple/Google Maps on iOS,
+  // and works as a plain page otherwise. No stored coordinates needed.
+  function mapUrl(item) {
+    const q = encodeURIComponent(item.name + ", Toronto, ON");
+    return "https://www.google.com/maps/search/?api=1&query=" + q;
+  }
+
   // Turns https links inside task text into tappable links (text stays escaped).
   function linkify(text) {
     return String(text || "")
@@ -230,7 +237,14 @@
       h(
         "div",
         { class: "item-main" },
-        h("h3", null, item.name),
+        h(
+          "h3",
+          null,
+          item.name,
+          item.kind === "checkpoint"
+            ? h("a", { class: "map-link", href: mapUrl(item), target: "_blank", rel: "noopener noreferrer", "aria-label": "Open in Maps" }, " 📍")
+            : null
+        ),
         h("p", { class: "task" }, linkify(item.task)),
         item.note ? h("p", { class: "note" }, item.note) : null,
         meta.length ? h("p", { class: "meta" }, meta) : null
@@ -440,7 +454,19 @@
         h(
           "div",
           { class: "dialog-head" },
-          h("div", null, h("h2", { id: "dlg-title" }, item.name), h("p", { class: "muted" }, linkify(item.task))),
+          h(
+            "div",
+            null,
+            h(
+              "h2",
+              { id: "dlg-title" },
+              item.name,
+              item.kind === "checkpoint"
+                ? h("a", { class: "map-link", href: mapUrl(item), target: "_blank", rel: "noopener noreferrer", "aria-label": "Open in Maps" }, " 📍")
+                : null
+            ),
+            h("p", { class: "muted" }, linkify(item.task))
+          ),
           h("button", { class: "close-x", type: "button", "aria-label": "Close", onclick: () => !busy && close() }, "\u00d7")
         ),
         h("label", { class: "photo-pick" }, fileInput, preview),
