@@ -372,6 +372,11 @@ textarea:focus {
   font-weight: 700;
 }
 
+.map-link {
+  font-size: 0.9rem;
+  text-decoration: none;
+}
+
 .item .task {
   margin-top: 0.15rem;
 }
