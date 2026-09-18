@@ -28,8 +28,9 @@ The script is safe to re-run. It won't duplicate anything or delete photos.
 ### 3. Connect the site to Supabase
 
 1. In Supabase, open **Project Settings > API** (on newer projects this may be under **API Keys**).
-2. Copy the **Project URL** and the public key. That's the one labelled **anon** or **publishable**, never the `service_role` or secret key.
-3. Open `js/config.js` and paste them in:
+2. Copy the and the public key. That's the one labelled **anon** or **publishable**, never the `service_role` or secret key. Seriously, **_never ever_**, leak the secret one.
+3. Copy the **Project URL** on the landing page of the project.
+4. Open `js/config.js` and paste them in:
 
 ```js
 supabaseUrl: "https://abcdefgh.supabase.co",
@@ -73,13 +74,13 @@ All scoring happens in the database, so every phone sees the same numbers.
 | Rule | Details |
 |---|---|
 | Photos count immediately | Every submission scores right away. Rejecting it removes the points. |
-| Crowded spots lose value | Each extra team claiming a checkpoint lowers its value for *every* team that claimed it. By default this scales to your team count: a spot claimed by all teams is worth 50%, with even steps in between. Order doesn't matter, so there's no reason to rush. |
+| Crowded spots lose value | Each extra team claiming a checkpoint lowers its value for every subsequent team that claims it, down to 50% of the total value. Better get to those spots fast! |
 | Campus cap | Only each team's best 8 campus stops count. |
-| Anywhere challenges | No crowd penalty. Some can be claimed more than once (for example, up to 3 team selfies). |
+| Anywhere challenges | No crowd penalty. Some can be claimed more than once (for example, up to 2 team selfies). |
 | Bonuses | Flat points, counted once per team per checkpoint. Organizers can untick wrong answers. |
 | Adjustments | Manual points or penalties added from the dashboard. |
 
-Teams see what a spot is worth *if they go*, with the original value struck through, so they can steer toward quieter spots.
+Teams will see what a spot is worth *if they go*, with the original value struck through, so they can steer toward quieter spots.
 
 ### Tuning
 
