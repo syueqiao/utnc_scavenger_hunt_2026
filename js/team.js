@@ -169,8 +169,27 @@
 
   // Universal Google Maps link: opens the app on Android, offers Apple/Google Maps on iOS,
   // and works as a plain page otherwise. No stored coordinates needed.
+  // Checkpoints whose name alone doesn't find the right spot. First match wins.
+  const MAP_OVERRIDES = [
+    { match: /gargoyle/i, url: "https://maps.app.goo.gl/wYwzM1GP7fWLrnah8" },
+    { match: /pet rock/i, url: "https://maps.app.goo.gl/2o5mXbkHQBEaoEu69" },
+    { match: /sun'?s out/i, url: "https://maps.app.goo.gl/J9wjBb81gF7jT8568" },
+    { match: /ghost story/i, query: "University College, University of Toronto, Toronto, ON" },
+    { match: /queen'?s park/i, url: "https://maps.app.goo.gl/Qjdc1zdJ7LjfHTPy6" },
+    { match: /ago facade/i, query: "Art Gallery of Ontario, Toronto, ON" },
+    { match: /trinity bellwoods/i, url: "https://maps.app.goo.gl/wxRy4a9GqTRz2RRY8" },
+    { match: /church.?wellesley/i, url: "https://maps.app.goo.gl/sstSHMHHpsQdD8fQ7" },
+    { match: /osgoode/i, url: "https://maps.app.goo.gl/fojF4XN2TtUTwQgs6" },
+    { match: /union station/i, url: "https://maps.app.goo.gl/LQmkazscXhkJo8Yk7" },
+    { match: /st\.? lawrence/i, url: "https://maps.app.goo.gl/wkFGDwaJ7ty76Rft5" },
+    { match: /flattest/i, url: "https://maps.app.goo.gl/rMNguzN4EefgoVGK7" },
+    { match: /island ferry/i, url: "https://maps.app.goo.gl/NJxi6aTYfpRga7qu5" }
+  ];
+
   function mapUrl(item) {
-    const q = encodeURIComponent(item.name + ", Toronto, ON");
+    const override = MAP_OVERRIDES.find((o) => o.match.test(item.name));
+    if (override && override.url) return override.url;
+    const q = encodeURIComponent(override ? override.query : item.name + ", Toronto, ON");
     return "https://www.google.com/maps/search/?api=1&query=" + q;
   }
 

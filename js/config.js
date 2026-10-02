@@ -2,8 +2,8 @@
 // The key here is the public "anon" or "publishable" key. It is meant to be
 // public; the database only allows what the setup script permits.
 window.HUNT_CONFIG = {
-  supabaseUrl: "https://llqhjiqeptdjjpvuxybj.supabase.co",
-  supabaseKey: "sb_publishable_EMVczbCt15JS-A165jO-tA_5HG7UecQ",
+  supabaseUrl: "https://xdjaryhmivsrjbnjwaek.supabase.co",
+  supabaseKey: "sb_publishable_rw7Urx_yEuLJg5OB26wXTQ_SYIeV_z7",
   bucket: "hunt-photos",
   title: "UTNC Scavenger Hunt",
   // Shown on the login screen and in the header.
